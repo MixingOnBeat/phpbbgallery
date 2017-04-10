@@ -81,10 +81,10 @@ class report
 	}
 
 	/**
-	* Close report
-	* @param 	array	$report_ids		array of report_ids to closedir
-	* @param 	int		$user_id		User Id, if not set - use current user idate
-	*/
+	 * Close report
+	 * @param    array $report_ids array of report_ids to closedir
+	 * @param bool|int $user_id User Id, if not set - use current user idate
+	 */
 	public function close_reports_by_image($report_ids, $user_id = false)
 	{
 		$sql_ary = array(
@@ -107,10 +107,11 @@ class report
 	}
 
 	/**
-	* Move an image from one album to another
-	*
-	* @param	mixed	$image_ids		Array or integer with image_id.
-	*/
+	 * Move an image from one album to another
+	 *
+	 * @param    mixed $image_ids Array or integer with image_id.
+	 * @param $move_to
+	 */
 	public function move_images($image_ids, $move_to)
 	{
 		$image_ids = self::cast_mixed_int2array($image_ids);
@@ -122,10 +123,12 @@ class report
 	}
 
 	/**
-	* Move the content from one album to another
-	*
-	* @param	mixed	$image_ids		Array or integer with image_id.
-	*/
+	 * Move the content from one album to another
+	 *
+	 * @param $move_from
+	 * @param $move_to
+	 * @internal param mixed $image_ids Array or integer with image_id.
+	 */
 	public function move_album_content($move_from, $move_to)
 	{
 		$sql = 'UPDATE ' . $this->reports_table . '
@@ -217,13 +220,14 @@ class report
 			WHERE ' . $this->db->sql_in_set('report_album_id', $album_ids);
 		$this->db->sql_query($sql);
 	}
+
 	/**
-	* Helper function building queues
-	* @param	(string)	type	What type of queue are we building (short or full)
-	* @param	(string)	target	For what are we building queue
-	* @param	(int)		$page	This queue builder should return objects for MCP queues, so page?
-	* @param	(int)		$count	We need how many elements per page
-	*/
+	 * Helper function building queues
+	 * @param    (string)    type    What type of queue are we building (short or full)
+	 * @param int $page
+	 * @param int $per_page
+	 * @param int $status
+	 */
 	public function build_list($album, $page = 1, $per_page = 0, $status = 1)
 	{
 		// So if we are not forcing par page get it from config

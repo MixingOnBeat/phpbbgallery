@@ -28,6 +28,30 @@ class manage
 
 	private $u_action = '';
 
+	/**
+	 * manage constructor.
+	 * @param \phpbb\user $user
+	 * @param \phpbb\request\request $request
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\event\dispatcher $dispatcher
+	 * @param \phpbbgallery\core\auth\auth $gallery_auth
+	 * @param album $gallery_album
+	 * @param display $gallery_display
+	 * @param \phpbbgallery\core\image\image $gallery_image
+	 * @param \phpbbgallery\core\cache $gallery_cache
+	 * @param \phpbbgallery\core\user $gallery_user
+	 * @param \phpbbgallery\core\config $gallery_config
+	 * @param \phpbbgallery\core\contest $gallery_contest
+	 * @param \phpbbgallery\core\report $gallery_report
+	 * @param \phpbbgallery\core\log $gallery_log
+	 * @param \phpbbgallery\core\notification $gallery_notification
+	 * @param $albums_table
+	 * @param $images_table
+	 * @param $comments_table
+	 * @param $permissions_table
+	 * @param $moderators_table
+	 * @param $contests_table
+	 */
 	public function __construct(\phpbb\user $user, \phpbb\request\request $request, \phpbb\db\driver\driver_interface $db,
 								\phpbb\event\dispatcher $dispatcher,
 								\phpbbgallery\core\auth\auth $gallery_auth, \phpbbgallery\core\album\album $gallery_album,
@@ -75,21 +99,27 @@ class manage
 	{
 		$this->u_action = $action;
 	}
+
 	/**
-	* Generate back link for acp pages
-	*/
+	 * Generate back link for acp pages
+	 * @param $u_action
+	 * @return string
+	 */
 	public function back_link($u_action)
 	{
 		return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $this->user->lang['BACK_TO_PREV'] . '</a>';
 	}
 
 	/**
-	* Update album data
-	*
-	* borrowed from phpBB3
-	* @author: phpBB Group
-	* @function: update_forum_data
-	*/
+	 * Update album data
+	 *
+	 * borrowed from phpBB3
+	 * @author: phpBB Group
+	 * @function: update_forum_data
+	 * @param $album_data
+	 * @param $contest_data
+	 * @return array
+	 */
 	public function update_album_data(&$album_data, &$contest_data)
 	{
 		$errors = array();
@@ -201,7 +231,7 @@ class manage
 			{
 				$sql = 'SELECT left_id, right_id, album_type
 					FROM ' . $this->albums_table . '
-					WHERE album_id = ' . $album_data_sql['parent_id'];
+					WHERE album_id = ' . (int) $album_data_sql['parent_id'];
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -216,13 +246,13 @@ class manage
 					$sql = 'UPDATE ' . $this->albums_table . ' 
 						SET left_id = left_id + 2, right_id = right_id + 2
 						WHERE album_user_id = 0
-							AND left_id > ' . $row['right_id'];
+							AND left_id > ' . (int) $row['right_id'];
 					$this->db->sql_query($sql);
 
 					$sql = 'UPDATE ' . $this->albums_table . ' 
 						SET right_id = right_id + 2
 						WHERE album_user_id = 0
-							AND ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
+							AND ' . (int) $row['left_id'] . ' BETWEEN left_id AND right_id';
 					$this->db->sql_query($sql);
 
 					$album_data_sql['left_id'] = $row['right_id'];
@@ -233,7 +263,7 @@ class manage
 					$sql = 'UPDATE ' . $this->albums_table . ' 
 						SET left_id = left_id + 2, right_id = right_id + 2
 						WHERE album_user_id = 0
-							AND left_id > ' . $row['left_id'];
+							AND left_id > ' . (int) $row['left_id'];
 					$this->db->sql_query($sql);
 
 					$sql = 'UPDATE ' . $this->albums_table . ' 
@@ -289,7 +319,7 @@ class manage
 
 				$sql = 'UPDATE ' . $this->albums_table . ' 
 					SET album_contest = ' . $album_data['album_contest'] . '
-					WHERE album_id = ' . $album_data['album_id'];
+					WHERE album_id = ' . (int) $album_data['album_id'];
 				$this->db->sql_query($sql);
 			}
 			$this->gallery_log->add_log('admin', 'add', $album_data['album_id'], 0, array('LOG_ALBUM_ADD', $album_data['album_name']));
@@ -402,7 +432,7 @@ class manage
 
 			$sql = 'UPDATE ' . $this->albums_table . '  
 				SET ' . $this->db->sql_build_array('UPDATE', $album_data_sql) . '
-				WHERE album_id = ' . $album_id;
+				WHERE album_id = ' . (int) $album_id;
 			$this->db->sql_query($sql);
 
 /*			if ($album_data_sql['album_type'] == $phpbb_ext_gallery_core_album::TYPE_CONTEST)
@@ -440,12 +470,15 @@ class manage
 	}
 
 	/**
-	* Move album
-	*
-	* borrowed from phpBB3
-	* @author: phpBB Group
-	* @function: move_forum
-	*/
+	 * Move album
+	 *
+	 * borrowed from phpBB3
+	 * @author: phpBB Group
+	 * @function: move_forum
+	 * @param $from_id
+	 * @param $to_id
+	 * @return array
+	 */
 	public function move_album($from_id, $to_id)
 	{
 		$to_data = $moved_ids = $errors = array();
@@ -544,12 +577,18 @@ class manage
 	}
 
 	/**
-	* Remove complete album
-	*
-	* borrowed from phpBB3
-	* @author: phpBB Group
-	* @function: delete_forum
-	*/
+	 * Remove complete album
+	 *
+	 * borrowed from phpBB3
+	 * @author: phpBB Group
+	 * @function: delete_forum
+	 * @param $album_id
+	 * @param string $action_images
+	 * @param string $action_subalbums
+	 * @param int $images_to_id
+	 * @param int $subalbums_to_id
+	 * @return array
+	 */
 	public function delete_album($album_id, $action_images = 'delete', $action_subalbums = 'delete', $images_to_id = 0, $subalbums_to_id = 0)
 	{
 		$album_data = $this->gallery_album->get_info($album_id);
@@ -574,7 +613,7 @@ class manage
 
 				$sql = 'SELECT album_name
 					FROM ' . $this->albums_table . '
-					WHERE album_id = ' . $images_to_id;
+					WHERE album_id = ' . (int) $images_to_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -745,12 +784,16 @@ class manage
 	}
 
 	/**
-	* Move album content from one to another album
-	*
-	* borrowed from phpBB3
-	* @author: phpBB Group
-	* @function: move_forum_content
-	*/
+	 * Move album content from one to another album
+	 *
+	 * borrowed from phpBB3
+	 * @author: phpBB Group
+	 * @function: move_forum_content
+	 * @param $from_id
+	 * @param $to_id
+	 * @param bool $sync
+	 * @return array
+	 */
 	public function move_album_content($from_id, $to_id, $sync = true)
 	{
 		// Lucifer TODO - Log to gallery log
@@ -810,9 +853,11 @@ class manage
 	}
 
 	/**
-	* Delete album content:
-	* Deletes all images, comments, rates, image-files, etc.
-	*/
+	 * Delete album content:
+	 * Deletes all images, comments, rates, image-files, etc.
+	 * @param $album_id
+	 * @return array
+	 */
 	public function delete_album_content($album_id)
 	{
 		$album_id = (int) $album_id;
@@ -908,12 +953,16 @@ class manage
 	}
 
 	/**
-	* Move album position by $steps up/down
-	*
-	* borrowed from phpBB3
-	* @author: phpBB Group
-	* @function: move_forum_by
-	*/
+	 * Move album position by $steps up/down
+	 *
+	 * borrowed from phpBB3
+	 * @author: phpBB Group
+	 * @function: move_forum_by
+	 * @param $album_row
+	 * @param string $action
+	 * @param int $steps
+	 * @return mixed
+	 */
 	public function move_album_by($album_row, $action = 'move_up', $steps = 1)
 	{
 		/**
@@ -925,7 +974,7 @@ class manage
 		$sql = 'SELECT album_id, album_name, left_id, right_id
 			FROM ' . $this->albums_table . ' 
 			WHERE parent_id = ' . $album_row['parent_id'] . '
-				AND album_user_id = ' . $this->user_id . '
+				AND album_user_id = ' . (int) $this->user_id . '
 				AND ' . (($action == 'move_up') ? 'right_id < ' . $album_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . $album_row['left_id'] . ' ORDER BY left_id ASC');
 		$result = $this->db->sql_query_limit($sql, $steps);
 

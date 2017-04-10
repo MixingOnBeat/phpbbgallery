@@ -79,10 +79,13 @@ class search
 	}
 
 	/**
-	* Generate random images and populate template
-	* @param (int)	$limit	how many images to generate_link
-	*/
-
+	 * Generate random images and populate template
+	 * @param (int)    $limit    how many images to generate_link
+	 * @param int $user
+	 * @param string $fields
+	 * @param bool $block_name
+	 * @param bool $u_block
+	 */
 	public function random($limit, $user = 0, $fields = 'rrc_gindex_display', $block_name = false, $u_block = false)
 	{
 		// Define some vars
@@ -201,7 +204,6 @@ class search
 	* Get all recent images the user has access to
 	* return (int) $images_count
 	*/
-
 	public function recent_count()
 	{
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
@@ -229,15 +231,26 @@ class search
 	}
 
 	/**
-	* recent comments
-	* @param (int)	$limit How many imagese to query
-	* @param (int)	$start From which image to start
-	*/
-
+	 * recent comments
+	 * @param (int)    $limit How many imagese to query
+	 * @param int $start
+	 */
 	public function recent_comments($limit, $start = 0)
 	{
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$sql_limit = $limit;
+		$exclude_albums = array();
+		if (!$this->gallery_config->get('rrc_gindex_pegas'))
+		{
+			$sql_no_user = 'SELECT album_id FROM ' . $this->albums_table . ' WHERE album_user_id > 0';
+			$result = $this->db->sql_query($sql_no_user);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$exclude_albums[] = (int) $row['album_id'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+		$exclude_albums = array_merge($exclude_albums, $this->gallery_auth->get_exclude_zebra());
 		$sql_array = array(
 			'FROM' => array(
 				$this->images_table => 'i',
@@ -247,6 +260,9 @@ class search
 			'GROUP_BY'	=> 'c.comment_id, i.image_id',
 			'ORDER_BY'	=> 'comment_time DESC'
 		);
+		$sql_array['WHERE'] .= ' AND ((' . $this->db->sql_in_set('image_album_id', array_diff($this->gallery_auth->acl_album_ids('i_view'), $exclude_albums), false, true) . ' AND image_status <> ' . \phpbbgallery\core\block::STATUS_UNAPPROVED . ')
+					OR ' . $this->db->sql_in_set('image_album_id', array_diff($this->gallery_auth->acl_album_ids('m_status'), $exclude_albums), false, true) . ')';
+
 		$sql_array['SELECT'] = 'COUNT(c.comment_id) as count';
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
@@ -316,7 +332,6 @@ class search
 	 * @param bool $block_name
 	 * @param bool $u_block
 	 */
-
 	public function recent($limit, $start = 0, $user = 0, $fields = 'rrc_gindex_display', $block_name = false, $u_block = false)
 	{
 		$pagination = true;
@@ -326,7 +341,6 @@ class search
 			$pagination = false;
 		}
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
-		//$sql_order = 'image_id DESC';
 		$sql_order = '';
 		switch ($this->gallery_config->get('default_sort_key'))
 		{
@@ -489,8 +503,10 @@ class search
 	}
 
 	/**
-	* Get top rated image
-	*/
+	 * Get top rated image
+	 * @param $limit
+	 * @param int $start
+	 */
 	public function rating($limit, $start = 0)
 	{
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);

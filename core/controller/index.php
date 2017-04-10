@@ -207,11 +207,12 @@ class index
 	}
 
 	/**
-	* Personal Index Controller
-	*	Route: gallery/users
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Personal Index Controller
+	 *    Route: gallery/users
+	 *
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function personal($page)
 	{
 		// Display login box for guests and an error for users

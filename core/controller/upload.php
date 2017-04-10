@@ -29,25 +29,27 @@ class upload
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\request\request                 $request
-	 * @param \phpbb\db\driver\driver_interface      $db
-	 * @param \phpbb\user                            $user    User object
-	 * @param \phpbb\template\template               $template
-	 * @param \phpbb\config\config                   $config
-	 * @param Container|ContainerInterface           $phpbb_container
-	 * @param \phpbbgallery\core\album\album         $album   Album class
-	 * @param \phpbbgallery\core\misc                $misc    Misc class
-	 * @param \phpbbgallery\core\auth\auth           $auth
-	 * @param \phpbbgallery\core\album\display       $display Display class
-	 * @param \phpbb\controller\helper               $helper
-	 * @param \phpbbgallery\core\config              $gallery_config
-	 * @param \phpbbgallery\core\user                $gallery_user
-	 * @param \phpbbgallery\core\image\image         $image
-	 * @param \phpbbgallery\core\notification        $gallery_notification
+	 * @param \phpbb\request\request $request
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\user $user User object
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\config\config $config
+	 * @param Container|ContainerInterface $phpbb_container
+	 * @param \phpbbgallery\core\album\album $album Album class
+	 * @param \phpbbgallery\core\misc $misc Misc class
+	 * @param \phpbbgallery\core\auth\auth $auth
+	 * @param \phpbbgallery\core\album\display $display Display class
+	 * @param \phpbb\controller\helper $helper
+	 * @param \phpbbgallery\core\config $gallery_config
+	 * @param \phpbbgallery\core\user $gallery_user
+	 * @param \phpbbgallery\core\image\image $image
+	 * @param \phpbbgallery\core\notification $gallery_notification
 	 * @param \phpbbgallery\core\notification\helper $notification_helper
-	 * @param \phpbbgallery\core\url                 $url
-	 * @param \phpbbgallery\core\upload              $gallery_upload
+	 * @param \phpbbgallery\core\url $url
+	 * @param \phpbbgallery\core\upload $gallery_upload
+	 * @param \phpbbgallery\core\block $block
 	 * @param                                        $images_table
+	 * @param $phpbb_root_path
 	 */
 
 	public function __construct(\phpbb\request\request $request, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\template\template $template,
@@ -126,7 +128,7 @@ class upload
 					FROM ' . $this->images_table . '
 					WHERE image_user_id = ' . $this->user->data['user_id'] . '
 						AND image_status <> ' . $this->block->get_image_status_orphan() . '
-						AND image_album_id = ' . $album_id;
+						AND image_album_id = ' . (int) $album_id;
 				$result = $this->db->sql_query($sql);
 				$own_images = (int) $this->db->sql_fetchfield('count');
 				$this->db->sql_freeresult($result);
@@ -231,7 +233,7 @@ class upload
 					FROM ' . $this->images_table . '
 					WHERE image_user_id = ' . $this->user->data['user_id'] . '
 						AND image_status <> ' . $this->block->get_image_status_orphan() . '
-						AND image_album_id = ' . $album_id;
+						AND image_album_id = ' . (int) $album_id;
 				$result = $this->db->sql_query($sql);
 				$own_images = (int) $this->db->sql_fetchfield('count');
 				$this->db->sql_freeresult($result);
@@ -322,13 +324,6 @@ class upload
 				}*/
 			}
 
-			if (!$submit || (isset($process) && !$process->uploaded_files))
-			{
-				for ($i = 0; $i < $upload_files_limit; $i++)
-				{
-					//$this->template->assign_block_vars('upload_image', array());
-				}
-			}
 			if ($mode == 'upload')
 			{
 				$this->template->assign_vars(array(
@@ -406,7 +401,7 @@ class upload
 						FROM ' . $this->images_table . '
 						WHERE image_user_id = ' . $this->user->data['user_id'] . '
 							AND image_status <> ' . $this->block->get_image_status_orphan() . '
-							AND image_album_id = ' . $album_id;
+							AND image_album_id = ' . (int) $album_id;
 					$result = $this->db->sql_query($sql);
 					$own_images = (int) $this->db->sql_fetchfield('count');
 					$this->db->sql_freeresult($result);
@@ -457,7 +452,7 @@ class upload
 					//$this->notification_helper->notify_album($album_id, $this->user->data['user_id']);
 					$data = array(
 						'targets'	=> array($this->user->data['user_id']),
-						'album_id'	=> $album_id,
+						'album_id'	=> (int) $album_id,
 						'last_image'	=> end($process->images),
 					);
 					$this->notification_helper->new_image($data);
@@ -465,7 +460,7 @@ class upload
 				else
 				{
 					$target = array(
-						'album_id'	=>	$album_id,
+						'album_id'	=>	(int) $album_id,
 						'last_image'	=> end($process->images),
 						'uploader'		=> $this->user->data['user_id'],
 					);

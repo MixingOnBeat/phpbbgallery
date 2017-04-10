@@ -96,16 +96,17 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate
+	 *
+	 * @param int $album_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function base($album_id = 0)
 	{
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$album_backlink = $album_id === 0 ? $this->helper->route('phpbbgallery_core_moderate') : $this->helper->route('phpbbgallery_core_moderate_album', array('album_id'	=> $album_id));
-		$album_loginlink = append_sid('./ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		if ($album_id === 0)
 		{
 			if (!$this->gallery_auth->acl_check_global('m_'))
@@ -146,11 +147,13 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/approve
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/approve
+	 *
+	 * @param $page
+	 * @param $album_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function queue_approve($page, $album_id)
 	{
 		$approve_ary = $this->request->variable('approval', array('' => array(0)));
@@ -164,7 +167,7 @@ class moderate
 
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$album_backlink = $album_id === 0 ? $this->helper->route('phpbbgallery_core_moderate') : $this->helper->route('phpbbgallery_core_moderate_album', array('album_id'	=> $album_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		if ($album_id === 0)
 		{
 			if (!$this->gallery_auth->acl_check_global('m_status'))
@@ -246,11 +249,13 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/actions
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/actions
+	 *
+	 * @param $page
+	 * @param $album_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function action_log($page, $album_id)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery_mcp'));
@@ -259,7 +264,7 @@ class moderate
 
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$album_backlink = $album_id === 0 ? $this->helper->route('phpbbgallery_core_moderate') : $this->helper->route('phpbbgallery_core_moderate_album', array('album_id'	=> $album_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		if ($album_id === 0)
 		{
 			if (!$this->gallery_auth->acl_check_global('m_'))
@@ -286,12 +291,16 @@ class moderate
 		$this->gallery_log->build_list('moderator', 0, $page, $album_id);
 		return $this->helper->render('gallery/moderate_actions.html', $this->user->lang('GALLERY'));
 	}
+
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/reports
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/reports
+	 *
+	 * @param $page
+	 * @param $album_id
+	 * @param $status
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function reports($page, $album_id, $status)
 	{
 		$report_ary = $this->request->variable('report', array(0));
@@ -325,7 +334,7 @@ class moderate
 		}
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$album_backlink = $album_id === 0 ? $this->helper->route('phpbbgallery_core_moderate') : $this->helper->route('phpbbgallery_core_moderate_album', array('album_id'	=> $album_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		if ($album_id === 0)
 		{
 			if (!$this->gallery_auth->acl_check_global('m_report'))
@@ -358,11 +367,13 @@ class moderate
 	}
 
 	/**
-	* Moderate Controller
-	* 	Route: gallery/moderate/{album_id}/list
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Moderate Controller
+	 *    Route: gallery/moderate/{album_id}/list
+	 *
+	 * @param $album_id
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function album_overview($album_id, $page)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery_mcp'));
@@ -458,7 +469,7 @@ class moderate
 		}
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		$album_backlink = $album_id === 0 ? $this->helper->route('phpbbgallery_core_moderate') : $this->helper->route('phpbbgallery_core_moderate_album', array('album_id'	=> $album_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		if ($album_id === 0)
 		{
 			if (!$this->gallery_auth->acl_check_global('m_'))
@@ -485,12 +496,14 @@ class moderate
 		$this->moderate->album_overview($album_id, $page);
 		return $this->helper->render('gallery/moderate_album_overview.html', $this->user->lang('GALLERY'));
 	}
+
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/image/{image_id}
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/image/{image_id}
+	 *
+	 * @param $image_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function image($image_id)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery_mcp'));
@@ -630,11 +643,12 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/image/{image_id}/approve
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/image/{image_id}/approve
+	 *
+	 * @param $image_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function approve($image_id)
 	{
 		$image_data = $this->image->get_image_data($image_id);
@@ -642,7 +656,7 @@ class moderate
 
 		$album_backlink = $this->helper->route('phpbbgallery_core_album', array('album_id' => $image_data['image_album_id']));
 		$image_backlink = $this->helper->route('phpbbgallery_core_image', array('image_id' => $image_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		$meta_refresh_time = 2;
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		if (!$this->gallery_auth->acl_check('m_status', $image_data['image_album_id'], $album_data['album_user_id']))
@@ -691,11 +705,12 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/image/{image_id}/unapprove
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/image/{image_id}/unapprove
+	 *
+	 * @param $image_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function unapprove($image_id)
 	{
 		$image_data = $this->image->get_image_data($image_id);
@@ -703,7 +718,7 @@ class moderate
 
 		$album_backlink = $this->helper->route('phpbbgallery_core_index');
 		$image_backlink = $this->helper->route('phpbbgallery_core_image', array('image_id' => $image_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		$meta_refresh_time = 2;
 		$this->gallery_auth->load_user_premissions($this->user->data['user_id']);
 		if (!$this->gallery_auth->acl_check('m_status', $image_data['image_album_id'], $album_data['album_user_id']))
@@ -731,11 +746,12 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/image/{image_id}/move
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/image/{image_id}/move
+	 *
+	 * @param $image_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function move($image_id)
 	{
 		$image_data = $this->image->get_image_data($image_id);
@@ -744,7 +760,7 @@ class moderate
 		$album_data =  $this->album->get_info($album_id);
 		$album_backlink = $this->helper->route('phpbbgallery_core_album', array('album_id' => $album_id));
 		$image_backlink = $this->helper->route('phpbbgallery_core_image', array('image_id' => $image_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		$meta_refresh_time = 2;
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery_mcp'));
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));
@@ -779,11 +795,12 @@ class moderate
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/modarate/image/{image_id}/lock
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/modarate/image/{image_id}/lock
+	 *
+	 * @param $image_id
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function lock($image_id)
 	{
 		$image_data = $this->image->get_image_data($image_id);
@@ -792,7 +809,7 @@ class moderate
 		$album_data =  $this->album->get_info($album_id);
 		$album_backlink = $this->helper->route('phpbbgallery_core_album', array('album_id' => $album_id));
 		$image_backlink = $this->helper->route('phpbbgallery_core_image', array('image_id' => $image_id));
-		$album_loginlink = append_sid('/ucp.php?mode=login');
+		$album_loginlink = append_sid($this->root_path . 'ucp.' . $this->php_ext . '?mode=login');
 		$meta_refresh_time = 2;
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery_mcp'));
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));

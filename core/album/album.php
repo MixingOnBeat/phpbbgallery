@@ -121,19 +121,20 @@ class album
 	}
 
 	/**
-	* Generate gallery-albumbox
-	* @param	bool				$ignore_personals		list personal albums
-	* @param	string				$select_name			request_var() for the select-box
-	* @param	int					$select_id				selected album
-	* @param	string				$requested_permission	Exp: for moving a image you need i_upload permissions or a_moderate
-	* @param	(string || array)	$ignore_id				disabled albums, Exp: on moving: the album where the image is now
-	* @param	int					$album_user_id			for the select-boxes of the ucp so you only can attach to your own albums
-	* @param	int					$requested_album_type	only albums of the album_type are allowed
-	*
-	* @return	string				$gallery_albumbox		if ($select_name) {full select-box} else {list with options}
-	*
-	* comparable to make_forum_select (includes/functions_admin.php)
-	*/
+	 * Generate gallery-albumbox
+	 * @param    bool $ignore_personals list personal albums
+	 * @param    string $select_name request_var() for the select-box
+	 * @param bool|int $select_id selected album
+	 * @param bool|string $requested_permission Exp: for moving a image you need i_upload permissions or a_moderate
+	 * @param bool $ignore_id
+	 * @param int $album_user_id for the select-boxes of the ucp so you only can attach to your own albums
+	 * @param    int $requested_album_type only albums of the album_type are allowed
+	 * @return string $gallery_albumbox        if ($select_name) {full select-box} else {list with options}
+	 * else {list with options}
+	 *
+	 * comparable to make_forum_select (includes/functions_admin.php)
+	 * @internal param $ (string || array)    $ignore_id                disabled albums, Exp: on moving: the album where the image is now
+	 */
 	public function get_albumbox($ignore_personals, $select_name, $select_id = false, $requested_permission = false, $ignore_id = false, $album_user_id = \phpbbgallery\core\block::PUBLIC_ALBUM, $requested_album_type = -1)
 	{
 		// Instead of the query we use the cache
@@ -273,12 +274,14 @@ class album
 	}
 
 	/**
-	* Update album information
-	* Resets the following columns with the correct value:
-	* - album_images, _real
-	* - album_last_image_id, _time, _name
-	* - album_last_username, _user_colour, _user_id
-	*/
+	 * Update album information
+	 * Resets the following columns with the correct value:
+	 * - album_images, _real
+	 * - album_last_image_id, _time, _name
+	 * - album_last_username, _user_colour, _user_id
+	 * @param $album_id
+	 * @return mixed
+	 */
 	public function update_info($album_id)
 	{
 		$images_real = $images = $album_user_id = 0;
@@ -352,15 +355,20 @@ class album
 		$this->db->sql_freeresult($result);
 
 		$sql = 'UPDATE ' . $this->albums_table .' SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-			WHERE ' . $this->db->sql_in_set('album_id', $album_id);
+			WHERE album_id = ' . (int) $album_id;
 		$this->db->sql_query($sql);
 
 		return $row;
 	}
 
 	/**
-	* Generate personal album for user, when moving image into it
-	*/
+	 * Generate personal album for user, when moving image into it
+	 * @param $album_name
+	 * @param $user_id
+	 * @param $user_colour
+	 * @param $gallery_user
+	 * @return string
+	 */
 	public function generate_personal_album($album_name, $user_id, $user_colour, $gallery_user)
 	{
 		$album_data = array(
@@ -392,7 +400,7 @@ class album
 		$this->gallery_config->set('newest_pega_album_id', $personal_album_id);
 
 		$this->gallery_cache->destroy('_albums');
-		$this->gallery_cache->destroy('sql', $albums_table);
+		$this->gallery_cache->destroy('sql', $this->albums_table);
 
 		return $personal_album_id;
 	}
@@ -411,7 +419,7 @@ class album
 		{
 			$id_ary[] = (int) $row['album_id'];
 		}
-
+		$this->db->sql_freeresult($result);
 		return $id_ary;
 	}
 }

@@ -121,7 +121,7 @@ class config_module
 				if ((strpos($config_name, 'watermark') !== false) && ($phpbb_gallery_configs->get($config_name) != $config_value))
 				{
 					$phpbb_gallery_configs->set('watermark_changed', time());
-					// OK .. let's try and destroy wotermarked images
+					// OK .. let's try and destroy watermarked images
 					$cache_dir = @opendir($phpbb_gallery_url->path('thumbnail'));
 					while ($cache_file = @readdir($cache_dir))
 					{
@@ -430,8 +430,11 @@ class config_module
 	);
 
 	/**
-	* Disabled Radio Buttons
-	*/
+	 * Disabled Radio Buttons
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function disabled_boolean($value, $key)
 	{
 		global $user;
@@ -445,8 +448,11 @@ class config_module
 	}
 
 	/**
-	* Select sort method
-	*/
+	 * Select sort method
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function sort_method_select($value, $key)
 	{
 		global $user;
@@ -466,8 +472,11 @@ class config_module
 	}
 
 	/**
-	* Select sort order
-	*/
+	 * Select sort order
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function sort_order_select($value, $key)
 	{
 		global $user;
@@ -481,8 +490,11 @@ class config_module
 	}
 
 	/**
-	* Radio Buttons for GD library
-	*/
+	 * Radio Buttons for GD library
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function gd_radio($value, $key)
 	{
 		global $phpbb_container;
@@ -499,8 +511,11 @@ class config_module
 	}
 
 	/**
-	* Display watermark
-	*/
+	 * Display watermark
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function watermark_source($value, $key)
 	{
 		global $user;
@@ -509,8 +524,11 @@ class config_module
 	}
 
 	/**
-	* Display watermark
-	*/
+	 * Display watermark
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function watermark_position($value, $key)
 	{
 		global $user;
@@ -532,8 +550,11 @@ class config_module
 	}
 
 	/**
-	* Select the link destination
-	*/
+	 * Select the link destination
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function uc_select($value, $key)
 	{
 		global $user;
@@ -556,8 +577,11 @@ class config_module
 	}
 
 	/**
-	* Select RRC-Config on gallery/index.php and in the profile
-	*/
+	 * Select RRC-Config on gallery/index.php and in the profile
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function rrc_modes($value, $key)
 	{
 		global $user, $phpbb_container;
@@ -579,8 +603,11 @@ class config_module
 	}
 
 	/**
-	* Select RRC display options
-	*/
+	 * Select RRC display options
+	 * @param $value
+	 * @param $key
+	 * @return string
+	 */
 	function rrc_display($value, $key)
 	{
 		global $user, $phpbb_container;
@@ -604,8 +631,10 @@ class config_module
 	}
 
 	/**
-	* BBCode-Template
-	*/
+	 * BBCode-Template
+	 * @param $value
+	 * @return string
+	 */
 	function bbcode_tpl($value)
 	{
 		global $phpbb_gallery_url;

@@ -94,11 +94,12 @@ class search
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/search
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/search
+	 *
+	 * @param int $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 
 	public function base($page = 1)
 	{
@@ -335,7 +336,6 @@ class search
 	*
 	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
 	*/
-
 	public function random()
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));
@@ -367,11 +367,12 @@ class search
 	}
 
 	/**
-	* Index Controller
-	*	Route: gallery/search/recent/{page}
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/search/recent/{page}
+	 *
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function recent($page)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));
@@ -406,12 +407,14 @@ class search
 
 		return $this->helper->render('gallery/search_recent.html', $this->user->lang('GALLERY'));
 	}
+
 	/**
-	* Index Controller
-	*	Route: gallery/search/recent/{page}
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/search/recent/{page}
+	 *
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function recent_comments($page)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));
@@ -445,12 +448,14 @@ class search
 
 		return $this->helper->render('gallery/search_results.html', $this->user->lang('GALLERY'));
 	}
+
 	/**
-	* Index Controller
-	*	Route: gallery/search/self/{page}
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/search/self/{page}
+	 *
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function ego_search($page)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));
@@ -484,12 +489,14 @@ class search
 
 		return $this->helper->render('gallery/search_results.html', $this->user->lang('GALLERY'));
 	}
+
 	/**
-	* Index Controller
-	*	Route: gallery/search/toprated/{page}
-	*
-	* @return Symfony\Component\HttpFoundation\Response A Symfony Response object
-	*/
+	 * Index Controller
+	 *    Route: gallery/search/toprated/{page}
+	 *
+	 * @param $page
+	 * @return Symfony\Component\HttpFoundation\Response A Symfony Response object
+	 */
 	public function toprated($page)
 	{
 		$this->user->add_lang_ext('phpbbgallery/core', array('gallery'));

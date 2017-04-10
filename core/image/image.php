@@ -132,12 +132,6 @@ class image
 			$this->file->delete($filenames);
 		}
 
-		// Delete the ratings...
-		//$phpbb_gallery_image_rating->delete_ratings($images);
-		//$phpbb_gallery_comment->delete_images($images);
-		//$phpbb_gallery_notification->delete_images($images);
-		//$this->gallery_report->delete_images($images);
-
 		/**
 		* Event delete images
 		*
@@ -223,7 +217,7 @@ class image
 	 * @param    bool $count shall the image-link be counted as view? (Set to false from image_page.php to deny double increment)
 	 * @param    string $additional_parameters additional parameters for the url, (starting with &amp;)
 	 * @param int $next_image
-	 * @return
+	 * @return mixed
 	 */
 	public function generate_link($content, $mode, $image_id, $image_name, $album_id, $is_gif = false, $count = true, $additional_parameters = '', $next_image = 0)
 	{
@@ -384,7 +378,7 @@ class image
 			return;
 		}
 
-		$sql = 'SELECT * FROM ' . $this->table_images .' WHERE image_id = ' . $image_id;
+		$sql = 'SELECT * FROM ' . $this->table_images .' WHERE image_id = ' . (int) $image_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

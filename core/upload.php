@@ -26,7 +26,7 @@ class upload
 	private $upload = null;
 	private $file = null;
 	private $zip_file = null;
-	private $tools = null;
+	//private $tools = null;
 
 	/**
 	* Basic variables...
@@ -58,19 +58,22 @@ class upload
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\user                       $user           phpBB User class
+	 * @param \phpbb\user $user phpBB User class
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
-	 * @param \phpbb\request\request            $request
-	 * @param \phpbbgallery\core\image\image    $gallery_image
-	 * @param \phpbbgallery\core\config         $gallery_config Gallery Config
-	 * @param \phpbbgallery\core\url            $gallery_url    Gallery url
+	 * @param \phpbb\request\request $request
+	 * @param \phpbbgallery\core\image\image $gallery_image
+	 * @param \phpbbgallery\core\config $gallery_config Gallery Config
+	 * @param \phpbbgallery\core\url $gallery_url Gallery url
+	 * @param block $block
+	 * @param file\file $gallery_file
 	 * @param                                   $images_table
 	 * @param                                   $root_path
 	 * @param                                   $php_ext
 	 */
 	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\request\request $request,
 								\phpbbgallery\core\image\image $gallery_image, \phpbbgallery\core\config $gallery_config, \phpbbgallery\core\url $gallery_url, \phpbbgallery\core\block $block,
+								\phpbbgallery\core\file\file $gallery_file,
 								$images_table,
 								$root_path, $php_ext)
 	{
@@ -82,6 +85,7 @@ class upload
 		$this->gallery_config = $gallery_config;
 		$this->gallery_url	= $gallery_url;
 		$this->block = $block;
+		$this->tools = $gallery_file;
 		$this->images_table = $images_table;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
@@ -101,8 +105,6 @@ class upload
 		}
 		$this->upload = new \fileupload();
 		$this->upload->fileupload('', $this->get_allowed_types(), (4 * $this->gallery_config->get('max_filesize')));
-
-		$this->tools = new \phpbbgallery\core\file\file($this->request, $this->gallery_url, $this->gallery_config->get('gdlib_version'));
 
 		$this->album_id = (int) $album_id;
 		$this->file_limit = (int) $num_files;
@@ -127,9 +129,9 @@ class upload
 		$this->file_count = (int) $file_count;
 
 		$this->files = $this->form_upload('files');
-		foreach ($this->files as $VAR)
+		foreach ($this->files as $var)
 		{
-			$this->file = $VAR;
+			$this->file = $var;
 			if (!$this->file->uploadname)
 			{
 				return false;
@@ -250,7 +252,7 @@ class upload
 	/**
 	 * Update image information in the database: name, description, status, contest, ...
 	 *
-	 * @param      $image_id
+	 * @param int $image_id
 	 * @param bool $needs_approval
 	 * @param bool $is_in_contest
 	 * @return bool
@@ -534,6 +536,7 @@ class upload
 			return 0;
 		}
 
+		// This code is never invoced. It's left here for future implementation.
 		$this->gallery_config->inc('current_upload_dir_size', 1);
 		if ($this->gallery_config->get('current_upload_dir_size') >= self::NUM_FILES_PER_DIR)
 		{
@@ -741,9 +744,9 @@ class upload
 	 *
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	 * @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
-	 * @param \phpbb\plupload\plupload $plupload The plupload object
-	 *
 	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
+	 * @internal param \phpbb\plupload\plupload $plupload The plupload object
+	 *
 	 * @access public
 	 */
 	private function form_upload($form_name, \phpbb\mimetype\guesser $mimetype_guesser = null)
@@ -762,14 +765,14 @@ class upload
 			);
 		}
 
-		foreach ($upload_redy as $ID => $VAR)
+		foreach ($upload_redy as $ID => $var)
 		{
 			$upload = array(
-				'name' => $VAR['name'],
-				'type' => $VAR['type'],
-				'tmp_name' => $VAR['tmp_name'],
-				'error'	=> $VAR['error'],
-				'size'	=> $VAR['size']
+				'name' => $var['name'],
+				'type' => $var['type'],
+				'tmp_name' => $var['tmp_name'],
+				'error'	=> $var['error'],
+				'size'	=> $var['size']
 			);
 			$file = new \filespec($upload, $this, $mimetype_guesser, null);
 			if ($file->init_error)
@@ -828,6 +831,7 @@ class upload
 
 	/**
 	 * Perform common checks
+	 * @param $file
 	 */
 	function common_checks(&$file)
 	{
@@ -876,8 +880,11 @@ class upload
 		}
 		return in_array($file->get('extension'), $allowed);
 	}
+
 	/**
 	 * Check for allowed dimension
+	 * @param $file
+	 * @return bool
 	 */
 	function valid_dimensions(&$file)
 	{
